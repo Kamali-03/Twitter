@@ -1,0 +1,1061 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiniBlog - Micro Blogging App</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f2f5;
+    color: #17202a;
+}
+
+header {
+    background: #1677ff;
+    color: white;
+    padding: 18px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+header h1 {
+    font-size: 27px;
+}
+
+header input {
+    padding: 11px 15px;
+    width: min(300px, 100%);
+    border: none;
+    border-radius: 25px;
+    outline: none;
+}
+
+.container {
+    max-width: 1150px;
+    margin: 25px auto;
+    padding: 0 15px;
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr) 260px;
+    gap: 20px;
+    align-items: start;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px #0000000b;
+}
+
+.profile {
+    text-align: center;
+}
+
+.avatar {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: #1677ff;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.profile h2 {
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+
+.muted {
+    color: #77808b;
+    font-size: 13px;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.stats strong {
+    display: block;
+    font-size: 19px;
+}
+
+.stats span {
+    font-size: 12px;
+    color: #77808b;
+}
+
+h3 {
+    margin-bottom: 15px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 95px;
+    border: 1px solid #e0e5ec;
+    border-radius: 10px;
+    padding: 13px;
+    font: inherit;
+    resize: vertical;
+    outline-color: #1677ff;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    border-radius: 20px;
+    padding: 10px 15px;
+    transition: 0.2s;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+.primary {
+    background: #1677ff;
+    color: white;
+}
+
+.secondary {
+    background: #eaf2ff;
+    color: #1677ff;
+}
+
+.danger {
+    background: #fff0f0;
+    color: #dc3545;
+}
+
+.post-tools {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.post-tools label {
+    color: #1677ff;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+#imageInput {
+    display: none;
+}
+
+#imagePreview {
+    max-width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+    margin-top: 12px;
+    border-radius: 10px;
+    display: none;
+}
+
+.feed-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.post {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px #0000000b;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.post-header .avatar {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+    margin: 0;
+}
+
+.author-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.author-info strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.post-content {
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    margin-bottom: 12px;
+}
+
+.post-image {
+    display: block;
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #f7f8fa;
+    margin-bottom: 12px;
+}
+
+.post-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-top: 1px solid #edf0f4;
+    padding-top: 12px;
+    margin-top: 10px;
+}
+
+.post-actions button {
+    background: #f4f6f9;
+    color: #526171;
+}
+
+.post-actions button.liked {
+    background: #ffe8ee;
+    color: #e91e63;
+}
+
+.comment-area {
+    margin-top: 12px;
+    display: none;
+}
+
+.comment-area.show {
+    display: block;
+}
+
+.comment-input {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.comment-input input {
+    min-width: 0;
+    flex: 1;
+    border: 1px solid #e0e5ec;
+    border-radius: 20px;
+    padding: 10px 13px;
+    outline-color: #1677ff;
+}
+
+.comment {
+    background: #f3f5f8;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 8px;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.user-item .avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    margin: 0;
+}
+
+.user-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-info strong {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.user-item button {
+    padding: 8px 10px;
+    font-size: 11px;
+}
+
+.empty {
+    background: white;
+    padding: 35px 15px;
+    text-align: center;
+    border-radius: 14px;
+    color: #77808b;
+    line-height: 1.8;
+}
+
+.notice {
+    font-size: 12px;
+    color: #77808b;
+    margin-top: 10px;
+}
+
+footer {
+    text-align: center;
+    color: #77808b;
+    padding: 20px;
+    font-size: 12px;
+}
+
+@media (max-width: 900px) {
+    .container {
+        grid-template-columns: 220px minmax(0, 1fr);
+    }
+
+    .right-column {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 600px) {
+    header {
+        padding: 15px;
+    }
+
+    header h1 {
+        font-size: 23px;
+    }
+
+    header input {
+        width: 100%;
+    }
+
+    .container {
+        grid-template-columns: 1fr;
+        margin-top: 15px;
+    }
+
+    .left-column,
+    .right-column {
+        grid-column: auto;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>💙 MiniBlog</h1>
+    <input
+        type="search"
+        id="searchInput"
+        placeholder="🔍 Search posts or people..."
+        aria-label="Search posts or people"
+    >
+</header>
+
+<div class="container">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="left-column">
+
+        <section class="card profile">
+            <div class="avatar" id="profileAvatar">K</div>
+            <h2 id="profileName">Kamali</h2>
+            <p class="muted">@kamali</p>
+
+            <div class="stats">
+                <div>
+                    <strong id="postCount">0</strong>
+                    <span>Posts</span>
+                </div>
+                <div>
+                    <strong id="followerCount">0</strong>
+                    <span>Followers</span>
+                </div>
+                <div>
+                    <strong id="followingCount">0</strong>
+                    <span>Following</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h3>👤 My Profile</h3>
+            <p class="muted" style="line-height:1.8">
+                Welcome to MiniBlog! Share your thoughts, connect with
+                people, and discover new posts.
+            </p>
+            <button class="secondary" style="width:100%;margin-top:15px"
+                onclick="showMyPosts()">
+                View My Posts
+            </button>
+            <button class="secondary" style="width:100%;margin-top:10px"
+                onclick="showHome()">
+                🏠 Home Feed
+            </button>
+        </section>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main>
+
+        <section class="card">
+            <h3>✍️ Create a Post</h3>
+
+            <textarea id="postText"
+                maxlength="1000"
+                placeholder="What's happening? Share your thoughts..."></textarea>
+
+            <input type="file" id="imageInput" accept="image/*">
+
+            <img id="imagePreview" alt="Selected image preview">
+
+            <div class="post-tools">
+                <label for="imageInput">📷 Add Image</label>
+                <span class="muted" id="charCount">0/1000</span>
+                <button class="primary" id="publishBtn" onclick="createPost()">
+                    Publish Post
+                </button>
+            </div>
+        </section>
+
+        <div class="feed-heading">
+            <h2 id="feedTitle" style="font-size:21px">🏠 Home Feed</h2>
+            <button class="secondary" onclick="showHome()">Refresh</button>
+        </div>
+
+        <section id="feed"></section>
+
+    </main>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="right-column">
+
+        <section class="card">
+            <h3>👥 Discover People</h3>
+            <div id="suggestions"></div>
+        </section>
+
+        <section class="card">
+            <h3>💡 About MiniBlog</h3>
+            <p class="muted" style="line-height:1.8">
+                A simple micro-blogging platform where users can share
+                updates, follow people, like posts, and comment.
+            </p>
+        </section>
+
+    </aside>
+
+</div>
+
+<footer>
+    MiniBlog © 2026 | Share your world, one post at a time 💙
+</footer>
+
+<script>
+"use strict";
+
+// ------------------------------------
+// USER DATA
+// ------------------------------------
+
+const CURRENT_USER = "kamali";
+
+const users = [
+    { id: "kamali", name: "Kamali", bio: "Student | Tech Enthusiast" },
+    { id: "arun", name: "Arun", bio: "Web Developer" },
+    { id: "priya", name: "Priya", bio: "UI/UX Designer" },
+    { id: "rahul", name: "Rahul", bio: "Technology Lover" },
+    { id: "divya", name: "Divya", bio: "Creative Thinker" },
+    { id: "kavin", name: "Kavin", bio: "Programmer" }
+];
+
+const defaultFollowing = ["arun", "priya"];
+
+function loadData(key, fallback) {
+    try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : fallback;
+    } catch (error) {
+        return fallback;
+    }
+}
+
+let following = loadData(
+    "miniblog_following",
+    defaultFollowing
+);
+
+let posts = loadData("miniblog_posts", [
+    {
+        id: 1,
+        userId: "arun",
+        text: "Just finished learning JavaScript basics! 🚀 Excited to build more projects.",
+        image: "",
+        time: Date.now() - 600000,
+        likes: [],
+        comments: []
+    },
+    {
+        id: 2,
+        userId: "priya",
+        text: "Working on a new UI/UX design today. Good design makes technology easier for everyone! 🎨",
+        image: "",
+        time: Date.now() - 1200000,
+        likes: [],
+        comments: []
+    },
+    {
+        id: 3,
+        userId: "rahul",
+        text: "Hello everyone! Welcome to MiniBlog. Let's connect and share ideas. 👋",
+        image: "",
+        time: Date.now() - 1800000,
+        likes: [],
+        comments: []
+    }
+]);
+
+let selectedImage = "";
+let currentView = "home";
+let searchQuery = "";
+
+function saveData() {
+    try {
+        localStorage.setItem("miniblog_posts", JSON.stringify(posts));
+        localStorage.setItem(
+            "miniblog_following",
+            JSON.stringify(following)
+        );
+        return true;
+    } catch (error) {
+        alert("Storage is full. Please remove some large images or posts.");
+        return false;
+    }
+}
+
+// ------------------------------------
+// HELPER FUNCTIONS
+// ------------------------------------
+
+function getUser(userId) {
+    return users.find(user => user.id === userId) || {
+        id: userId,
+        name: userId,
+        bio: ""
+    };
+}
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[character]);
+}
+
+function avatarLetter(user) {
+    return escapeHTML(user.name.charAt(0).toUpperCase());
+}
+
+function formatTime(timestamp) {
+    const difference = Math.max(0, Date.now() - timestamp);
+    const minutes = Math.floor(difference / 60000);
+
+    if (minutes < 1) return "Just now";
+    if (minutes < 60) return minutes + "m ago";
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return hours + "h ago";
+
+    const days = Math.floor(hours / 24);
+    if (days < 7) return days + "d ago";
+
+    return new Date(timestamp).toLocaleDateString();
+}
+
+function isFollowing(userId) {
+    return following.includes(userId);
+}
+
+function getFollowerCount(userId) {
+    return users.filter(user =>
+        followingByUser(user.id, userId)
+    ).length;
+}
+
+// This demo stores the current user's follow list.
+// Other sample users' follower counts are illustrative.
+function followingByUser(followerId, targetId) {
+    if (followerId !== CURRENT_USER) return false;
+    return following.includes(targetId);
+}
+
+function updateProfile() {
+    const mine = posts.filter(post => post.userId === CURRENT_USER);
+
+    document.getElementById("postCount").textContent = mine.length;
+    document.getElementById("followingCount").textContent = following.length;
+
+    document.getElementById("followerCount").textContent =
+        getFollowerCount(CURRENT_USER);
+}
+
+// ------------------------------------
+// CREATE POST
+// ------------------------------------
+
+const postText = document.getElementById("postText");
+const imageInput = document.getElementById("imageInput");
+const imagePreview = document.getElementById("imagePreview");
+
+postText.addEventListener("input", function () {
+    document.getElementById("charCount").textContent =
+        this.value.length + "/1000";
+});
+
+imageInput.addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        alert("Please choose an image file.");
+        this.value = "";
+        return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+        alert("Please choose an image smaller than 2 MB.");
+        this.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+        selectedImage = event.target.result;
+        imagePreview.src = selectedImage;
+        imagePreview.style.display = "block";
+    };
+
+    reader.readAsDataURL(file);
+});
+
+function createPost() {
+    const text = postText.value.trim();
+
+    if (!text && !selectedImage) {
+        alert("Please write something or add an image!");
+        return;
+    }
+
+    const newPost = {
+        id: Date.now() + Math.floor(Math.random() * 1000),
+        userId: CURRENT_USER,
+        text: text,
+        image: selectedImage,
+        time: Date.now(),
+        likes: [],
+        comments: []
+    };
+
+    posts.unshift(newPost);
+
+    if (!saveData()) {
+        posts.shift();
+        return;
+    }
+
+    postText.value = "";
+    imageInput.value = "";
+    selectedImage = "";
+    imagePreview.src = "";
+    imagePreview.style.display = "none";
+    document.getElementById("charCount").textContent = "0/1000";
+
+    showHome();
+}
+
+// ------------------------------------
+// FOLLOW AND UNFOLLOW
+// ------------------------------------
+
+function toggleFollow(userId) {
+    if (userId === CURRENT_USER) return;
+
+    if (isFollowing(userId)) {
+        following = following.filter(id => id !== userId);
+    } else {
+        following.push(userId);
+    }
+
+    saveData();
+    renderSuggestions();
+    updateProfile();
+    renderFeed();
+}
+
+// ------------------------------------
+// LIKE POSTS
+// ------------------------------------
+
+function toggleLike(postId) {
+    const post = posts.find(item => item.id === postId);
+    if (!post) return;
+
+    if (!Array.isArray(post.likes)) post.likes = [];
+
+    if (post.likes.includes(CURRENT_USER)) {
+        post.likes = post.likes.filter(id => id !== CURRENT_USER);
+    } else {
+        post.likes.push(CURRENT_USER);
+    }
+
+    saveData();
+    renderFeed();
+}
+
+// ------------------------------------
+// COMMENTS
+// ------------------------------------
+
+function toggleComments(postId) {
+    const area = document.getElementById("comments-" + postId);
+    if (area) area.classList.toggle("show");
+}
+
+function addComment(postId) {
+    const input = document.getElementById("comment-input-" + postId);
+    const text = input.value.trim();
+
+    if (!text) {
+        alert("Please enter a comment.");
+        return;
+    }
+
+    const post = posts.find(item => item.id === postId);
+    if (!post) return;
+
+    if (!Array.isArray(post.comments)) post.comments = [];
+
+    post.comments.push({
+        userId: CURRENT_USER,
+        text: text,
+        time: Date.now()
+    });
+
+    if (!saveData()) {
+        post.comments.pop();
+        return;
+    }
+
+    renderFeed();
+
+    const area = document.getElementById("comments-" + postId);
+    if (area) area.classList.add("show");
+}
+
+// ------------------------------------
+// DELETE YOUR OWN POST
+// ------------------------------------
+
+function deletePost(postId) {
+    const post = posts.find(item => item.id === postId);
+
+    if (!post || post.userId !== CURRENT_USER) return;
+
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    posts = posts.filter(item => item.id !== postId);
+    saveData();
+    updateProfile();
+    renderFeed();
+}
+
+// ------------------------------------
+// SEARCH
+// ------------------------------------
+
+document.getElementById("searchInput").addEventListener("input", function () {
+    searchQuery = this.value.trim().toLowerCase();
+    currentView = "search";
+
+    document.getElementById("feedTitle").textContent =
+        searchQuery ? "🔍 Search Results" : "🏠 Home Feed";
+
+    renderFeed();
+    renderSuggestions();
+});
+
+// ------------------------------------
+// NAVIGATION
+// ------------------------------------
+
+function showHome() {
+    currentView = "home";
+    searchQuery = "";
+
+    document.getElementById("searchInput").value = "";
+    document.getElementById("feedTitle").textContent = "🏠 Home Feed";
+
+    renderFeed();
+    renderSuggestions();
+}
+
+function showMyPosts() {
+    currentView = "mine";
+    searchQuery = "";
+
+    document.getElementById("searchInput").value = "";
+    document.getElementById("feedTitle").textContent = "📝 My Posts";
+
+    renderFeed();
+}
+
+// ------------------------------------
+// RENDER POSTS
+// ------------------------------------
+
+function renderFeed() {
+    const feed = document.getElementById("feed");
+
+    let visiblePosts = posts.filter(post => {
+        if (currentView === "mine") {
+            return post.userId === CURRENT_USER;
+        }
+
+        if (currentView === "search") {
+            const user = getUser(post.userId);
+
+            return (
+                post.text.toLowerCase().includes(searchQuery) ||
+                user.name.toLowerCase().includes(searchQuery) ||
+                post.userId.toLowerCase().includes(searchQuery)
+            );
+        }
+
+        // Home feed: your own posts and posts from followed users.
+        return post.userId === CURRENT_USER ||
+            isFollowing(post.userId);
+    });
+
+    visiblePosts.sort((a, b) => b.time - a.time);
+
+    if (visiblePosts.length === 0) {
+        feed.innerHTML = `
+            <div class="empty">
+                <h3>📭 No posts found</h3>
+                <p>Follow people to see their posts, or create your first post!</p>
+            </div>
+        `;
+        updateProfile();
+        return;
+    }
+
+    feed.innerHTML = visiblePosts.map(post => {
+        const user = getUser(post.userId);
+        const liked = Array.isArray(post.likes) &&
+            post.likes.includes(CURRENT_USER);
+
+        const comments = Array.isArray(post.comments) ?
+            post.comments : [];
+
+        const likes = Array.isArray(post.likes) ?
+            post.likes : [];
+
+        const commentHTML = comments.map(comment => {
+            const commentUser = getUser(comment.userId);
+
+            return `
+                <div class="comment">
+                    <strong>${escapeHTML(commentUser.name)}</strong>
+                    <span>${escapeHTML(comment.text)}</span>
+                </div>
+            `;
+        }).join("");
+
+        const imageHTML = post.image
+            ? `<img class="post-image"
+                    src="${escapeHTML(post.image)}"
+                    alt="Post image"
+                    loading="lazy">`
+            : "";
+
+        const followButton = post.userId !== CURRENT_USER
+            ? `<button class="secondary"
+                    onclick="toggleFollow('${escapeHTML(post.userId)}')">
+                    ${isFollowing(post.userId) ? "Following ✓" : "+ Follow"}
+               </button>`
+            : "";
+
+        const deleteButton = post.userId === CURRENT_USER
+            ? `<button onclick="deletePost(${post.id})">🗑 Delete</button>`
+            : "";
+
+        return `
+            <article class="post">
+                <div class="post-header">
+                    <div class="avatar">${avatarLetter(user)}</div>
+
+                    <div class="author-info">
+                        <strong>${escapeHTML(user.name)}</strong>
+                        <span class="muted">
+                            @${escapeHTML(user.id)} · ${formatTime(post.time)}
+                        </span>
+                    </div>
+
+                    ${followButton}
+                </div>
+
+                ${post.text
+                    ? `<div class="post-content">${escapeHTML(post.text)}</div>`
+                    : ""}
+
+                ${imageHTML}
+
+                <div class="muted">
+                    ❤️ ${likes.length} likes · 💬 ${comments.length} comments
+                </div>
+
+                <div class="post-actions">
+                    <button class="${liked ? "liked" : ""}"
+                        onclick="toggleLike(${post.id})">
+                        ${liked ? "❤️ Liked" : "🤍 Like"}
+                    </button>
+
+                    <button onclick="toggleComments(${post.id})">
+                        💬 Comment
+                    </button>
+
+                    ${deleteButton}
+                </div>
+
+                <div class="comment-area" id="comments-${post.id}">
+                    ${commentHTML}
+
+                    <div class="comment-input">
+                        <input
+                            id="comment-input-${post.id}"
+                            type="text"
+                            maxlength="300"
+                            placeholder="Write a comment..."
+                            onkeydown="if(event.key==='Enter') addComment(${post.id})">
+
+                        <button class="primary"
+                            onclick="addComment(${post.id})">
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </article>
+        `;
+    }).join("");
+
+    updateProfile();
+}
+
+// ------------------------------------
+// RENDER SUGGESTED USERS
+// ------------------------------------
+
+function renderSuggestions() {
+    const container = document.getElementById("suggestions");
+
+    const query = searchQuery;
+
+    const availableUsers = users.filter(user => {
+        if (user.id === CURRENT_USER) return false;
+
+        if (!query) return true;
+
+        return user.name.toLowerCase().includes(query) ||
+            user.id.toLowerCase().includes(query);
+    });
+
+    if (availableUsers.length === 0) {
+        container.innerHTML =
+            `<p class="muted">No people found.</p>`;
+        return;
+    }
+
+    container.innerHTML = availableUsers.map(user => `
+        <div class="user-item">
+            <div class="avatar">${avatarLetter(user)}</div>
+
+            <div class="user-info">
+                <strong>${escapeHTML(user.name)}</strong>
+                <span class="muted">@${escapeHTML(user.id)}</span>
+            </div>
+
+            <button
+                class="${isFollowing(user.id) ? "secondary" : "primary"}"
+                onclick="toggleFollow('${escapeHTML(user.id)}')">
+                ${isFollowing(user.id) ? "Following" : "Follow"}
+            </button>
+        </div>
+    `).join("");
+}
+
+// ------------------------------------
+// INITIALIZE APPLICATION
+// ------------------------------------
+
+function initialize() {
+    following = following.filter(id =>
+        id !== CURRENT_USER && users.some(user => user.id === id)
+    );
+
+    posts = posts.map(post => ({
+        ...post,
+        likes: Array.isArray(post.likes) ? post.likes : [],
+        comments: Array.isArray(post.comments) ? post.comments : []
+    }));
+
+    updateProfile();
+    renderSuggestions();
+    renderFeed();
+}
+
+initialize();
+</script>
+
+</body>
+</html>
